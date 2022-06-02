@@ -3,7 +3,7 @@ $("#searchButton").click(function () {
     let searchType = String($("#searchFor").val());
     let query =
         {
-            "size": 10000,
+            "size": 1000,
             "query": {
                 "match":{
                     [searchType] : searchValue
@@ -29,7 +29,7 @@ $("#searchButton").click(function () {
             result.hits.hits.forEach(element => {
                 base = element._source;
                 el = document.createElement("div");
-                el.innerHTML = `<li><span class="values"> ${base.id} ${base.content} ${base.title} ${base['media-type']} ${base.source} ${base.published} </span>`;
+                el.innerHTML = `<li><span class="values"> ${base.id} ${base.content} ${base.title} ${base['media-type']} ${base.source} ${new Date(base.published)} </span>`;
                 $("#serp").prepend(el);
             });
         },

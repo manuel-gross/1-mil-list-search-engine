@@ -1,3 +1,5 @@
+import {addSearchInput} from "./SearchBarManager.js";
+
 $("#searchButton").click(function () {
     let searchValue = $("#searchInput").val();
     let searchType = String($("#searchFor").val());
@@ -41,3 +43,7 @@ $("#searchButton").click(function () {
 
 });
 
+$("#addSearchBar").click(function () {
+    console.log("whoops");
+    addSearchInput();
+});

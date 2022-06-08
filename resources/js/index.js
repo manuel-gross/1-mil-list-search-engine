@@ -1,15 +1,20 @@
 import {addSearchInput} from "./SearchBarManager.js";
 
+let indexCount = 0;
+
+//TODO: Make this a comparison between all the results
+//TODO: Add a remove button
+
 $("#searchButton").click(function () {
-    let searchValue = $("#searchInput").val();
-    let searchType = String($("#searchFor").val());
-    let query =
-        {
+    for (let index = 0; index < indexCount; index++){
+        let searchValue = $(`#searchInput${index}`).val();
+        let searchType = String($(`#searchFor${index}`).val());
+        let query = {
             "size": 1000,
             "query": {
                 "match":{
                     [searchType] : searchValue
-				}
+	    		}
             }
         };
 
@@ -32,7 +37,7 @@ $("#searchButton").click(function () {
                 let base = element._source;
                 let el = document.createElement("div");
                 el.innerHTML = `<li><span class="values"> ${base.id} ${base.content} ${base.title} ${base['media-type']} ${base.source} ${new Date(base.published)} </span>`;
-                $("#serp").prepend(el);
+                $("#serp").append(el);
             });
         },
         error: function(result) {
@@ -40,10 +45,13 @@ $("#searchButton").click(function () {
         },
 
     });
+    
+}
 
 });
 
 $("#addSearchBar").click(function () {
     console.log("whoops");
-    addSearchInput();
+    addSearchInput(indexCount);
+    indexCount++;
 });

@@ -47,7 +47,6 @@ $("#searchButton").click(function () {
     });
     
 }
-
 });
 
 $("#addSearchBar").click(function () {

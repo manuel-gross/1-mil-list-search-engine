@@ -1,56 +1,95 @@
 import {addSearchInput} from "./SearchBarManager.js";
 
 let indexCount = 0;
+let hasBeenFilled = false;
+let totalList = [];
 
-//TODO: Make this a comparison between all the results
-//TODO: Add a remove button
-
-$("#searchButton").click(function () {
+$("#searchButton").click(async function () {
     for (let index = 0; index < indexCount; index++){
+        await asyncRequest(index);
+    }
+    returnSERP();
+});
+
+function asyncRequest(index){
+    return new Promise((resolve, reject) => {        
         let searchValue = $(`#searchInput${index}`).val();
         let searchType = String($(`#searchFor${index}`).val());
         let query = {
-            "size": 1000,
-            "query": {
-                "match":{
+            "size": 10000,
+                "query": {
+                    "match":{
                     [searchType] : searchValue
-	    		}
+                }
             }
         };
 
-    $.ajax({
-        url: "http://localhost:9200/articles/_search",
-        type: "GET",
-        dataType: "json",
-        contentType: "application/json",
-        crossDomain: true,
-        data: {
-            source: JSON.stringify(query),
-            source_content_type:"application/json"
-        },
-        success: function (result) {
-            console.log("SUCCESS");
-            console.log(result.hits);
-            console.log(result.hits.hits);
-            console.log(result.hits.hits.length);
-            result.hits.hits.forEach(element => {
-                let base = element._source;
-                let el = document.createElement("div");
-                el.innerHTML = `<li><span class="values"> ${base.id} ${base.content} ${base.title} ${base['media-type']} ${base.source} ${new Date(base.published)} </span>`;
-                $("#serp").append(el);
-            });
-        },
-        error: function(result) {
-            console.log("ERROR");
-        },
+        console.log(searchValue == "")
+        if(searchValue == "") return;
 
-    });
+        $.ajax({
+            url: "http://localhost:9200/articles/_search",
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            crossDomain: true,
+            data: {
+                source: JSON.stringify(query),
+                source_content_type:"application/json"
+            },
+            success: function (result) {
+                console.log("SUCCESS");
+                let hits = result.hits.hits;
+                console.log(hits);
+                console.log(hits.length);
+                if(hasBeenFilled){
+                    totalList = totalList.filter(o1 => hits.some(o2 => o1._id === o2._id));
+                }
+                else{
+                    totalList = hits;
+                    hasBeenFilled = true;
+                }
+                resolve();
+            },
+            error: function(result) {
+                console.log("ERROR");
+                reject();
+            },
+        });
+    }, err => {
+        console.error("woops:"+ err)
+        reject(err);
+    }
     
+    );
 }
-});
+
+function returnSERP(){
+    console.log(totalList.length);
+    console.log(totalList);
+    totalList.forEach(element => {
+        let base = element._source;
+        let el = document.createElement("div");
+        el.innerHTML = `<li><span class="values"> ${base.id} ${base.content} ${base.title} ${base['media-type']} ${base.source} ${new Date(base.published)} </span>`;
+        $("#serp").append(el);
+    });
+    hasBeenFilled = false;
+}
 
 $("#addSearchBar").click(function () {
     console.log("whoops");
     addSearchInput(indexCount);
     indexCount++;
+});
+
+$("#clearAll").click(function(){
+    var inputs = document.getElementById("searchCondition");
+    var serp = document.getElementById("serp");
+    while (inputs.hasChildNodes()) {
+        inputs.removeChild(inputs.firstChild);
+    }
+    while (serp.hasChildNodes()){
+        serp.removeChild(serp.firstChild);
+    }
+    indexCount = 0;
 });

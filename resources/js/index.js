@@ -67,7 +67,7 @@ function asyncRequest(index){
 function returnSERP(){
     console.log(totalList.length);
     console.log(totalList);
-    totalList.forEach(element => {
+    totalList.slice(0, 50).forEach(element => {
         let base = element._source;
         let el = document.createElement("div");
         el.innerHTML = `<li><span class="values"> ${base.id} ${base.content} ${base.title} ${base['media-type']} ${base.source} ${new Date(base.published)} </span>`;
@@ -93,3 +93,17 @@ $("#clearAll").click(function(){
     }
     indexCount = 0;
 });
+
+$("#download").click(function(){
+    let returnList = totalList.slice(0, 50);
+    let json = JSON.stringify(returnList);
+    let data = "data:text/json;charset=utf-8," + encodeURIComponent(json)
+
+    let link = document.createElement("a");
+    link.setAttribute("href", data);
+    link.setAttribute("download", "results.json");
+    document.body.appendChild(link);
+    link.click();
+})
+
+//TODO: add automatic formatting into text file and download 50 files, run over 50 outputs

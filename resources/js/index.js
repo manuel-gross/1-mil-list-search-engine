@@ -70,7 +70,7 @@ function returnSERP(){
     totalList.slice(0, 50).forEach(element => {
         let base = element._source;
         let el = document.createElement("div");
-        el.innerHTML = `<li><span class="values"> ${base.id} ${base.content} ${base.title} ${base['media-type']} ${base.source} ${new Date(base.published)} </span>`;
+        el.innerHTML = `<li><span class="values"> ${base.id} </span>`;
         $("#serp").append(el);
     });
     hasBeenFilled = false;
